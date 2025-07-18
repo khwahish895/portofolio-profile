@@ -1606,7 +1606,7 @@ body {
 .form-group textarea {
     width: 100%;
     padding: 1rem;
-    background: repeating-linear-gradient(135deg, rgba(0,255,255,0.15) 0 10px, transparent 10px 20px), rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     background-size: 40px 40px;
     animation: bgLinesMove 3s linear infinite;
     border: 2px solid var(--primary-color);
@@ -1615,11 +1615,6 @@ body {
     transition: var(--transition);
 }
 
-
-@keyframes bgLinesMove {
-  0% { background-position: 0 0, 0 0; }
-  100% { background-position: 40px 40px, 0 0; }
-}
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
