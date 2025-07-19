@@ -1,6 +1,6 @@
-# Khwahish Singh - Portfolio with Contact Form System
+# Khwahish Singh - Portfolio 
 
-A modern, neon-themed portfolio website with a complete contact form management system.
+A modern, neon-themed portfolio website showcasing skills and projects.
 
 ## Features
 
@@ -12,6 +12,7 @@ A modern, neon-themed portfolio website with a complete contact form management 
 - ⌨️ Keyboard navigation (1-7 keys)
 - 📄 CV download functionality
 
+ 📧 Contact form that opens email client
 ### Contact Form System
 - 📧 **Message Storage**: All contact form submissions are stored in a JSON database
 - 📊 **Dashboard**: Beautiful dashboard to view and manage all messages
