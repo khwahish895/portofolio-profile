@@ -81,6 +81,10 @@ document.querySelectorAll('[data-section]').forEach(btn => {
 
 // Keyboard Navigation (1-7 keys for sections)
 document.addEventListener('keydown', (e) => {
+    // Prevent section navigation if focused on input or textarea
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+        return;
+    }
     const keyMap = {
         '1': 'home',
         '2': 'about',
@@ -209,7 +213,7 @@ Projects:
 });
 
 // Contact Form
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const formData = new FormData(contactForm);
@@ -218,23 +222,62 @@ contactForm.addEventListener('submit', (e) => {
     const subject = formData.get('subject');
     const message = formData.get('message');
     
-    // Create mailto link with proper formatting
-    const emailBody = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
-    const mailtoLink = `mailto:khwahishsingh2005@gmail.com?subject=${encodeURIComponent(subject)}&body=${emailBody}`;
+    // Show loading state
+    const submitBtn = contactForm.querySelector('.send-btn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    submitBtn.disabled = true;
     
-    // Open email client
     try {
-        window.open(mailtoLink, '_blank');
+        // Send to server
+        const response = await fetch('/api/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, subject, message })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Success - also open email client as backup
+            const emailBody = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            const mailtoLink = `mailto:khwahishsingh2005@gmail.com?subject=${encodeURIComponent(subject)}&body=${emailBody}`;
+            
+            try {
+                window.open(mailtoLink, '_blank');
+            } catch (error) {
+                // Fallback for mobile devices
+                window.location.href = mailtoLink;
+            }
+            
+            showNotification('✅ Message saved and email client opened! Check your dashboard to view all messages.');
+            
+            // Reset form
+            contactForm.reset();
+        } else {
+            throw new Error(result.error || 'Failed to send message');
+        }
     } catch (error) {
-        // Fallback for mobile devices
-        window.location.href = mailtoLink;
+        console.error('Error sending message:', error);
+        
+        // Fallback to original email client method
+        const emailBody = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+        const mailtoLink = `mailto:khwahishsingh2005@gmail.com?subject=${encodeURIComponent(subject)}&body=${emailBody}`;
+        
+        try {
+            window.open(mailtoLink, '_blank');
+            showNotification('📧 Email client opened! (Server unavailable - using fallback method)');
+        } catch (fallbackError) {
+            window.location.href = mailtoLink;
+            showNotification('📧 Email client opened! (Server unavailable - using fallback method)');
+        }
+    } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     }
-    
-    // Show notification
-    showNotification('📧 Email client opened! Please send the email from your email application.');
-    
-    // Reset form
-    contactForm.reset();
 });
 
 // Notification System
