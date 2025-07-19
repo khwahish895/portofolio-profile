@@ -81,6 +81,10 @@ document.querySelectorAll('[data-section]').forEach(btn => {
 
 // Keyboard Navigation (1-7 keys for sections)
 document.addEventListener('keydown', (e) => {
+    // Prevent section navigation if focused on input or textarea
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+        return;
+    }
     const keyMap = {
         '1': 'home',
         '2': 'about',
